@@ -37,5 +37,35 @@ namespace Actividad3ApiDB.Controllers
 
             return Ok(libro);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<Libro>> PostLibro(Libro libro)
+        {
+            _context.Libros.Add(libro);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetLibro), new { id = libro.Id }, libro);
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutLibro(int id, Libro libro)
+        {
+            if (id != libro.Id)
+            {
+                return BadRequest();
+            }
+
+            var libroExiste = await _context.Libros.AnyAsync(l => l.Id == id);
+            if (!libroExiste)
+            {
+                return NotFound(); 
+            }
+
+            _context.Entry(libro).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent(); 
+        }
     }
 }
