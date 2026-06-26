@@ -18,9 +18,16 @@ namespace Actividad3ApiDB.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Libro>>> GetLibros()
+        public async Task<ActionResult<IEnumerable<Libro>>> GetLibros([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {
-            var libros = await _context.Libros.ToListAsync();
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 5;
+
+            var libros = await _context.Libros
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
             return Ok(libros);
         }
 
